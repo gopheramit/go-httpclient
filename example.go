@@ -11,15 +11,14 @@ var (
 	githubHttpClient = getGithubClient()
 )
 
-func getGithubClient() gohttp.HttpClient {
+func getGithubClient() gohttp.Client {
 
-	client := gohttp.New()
-	//client.SetConnectionTimeout(2 * time.Second)
-	//client.SetMaxIdleConnections(2)
-	//client.SetResponseTimeout(4 * time.Second)
-	commonHeaders := make(http.Header)
-	commonHeaders.Set("Authorization", "Bearer ABC123")
-	client.SetHeaders(commonHeaders)
+	client := gohttp.NewBuilder().DisableTimeouts(true).
+		SetMaxIdleConnections(5).Build()
+
+	//	commonHeaders := make(http.Header)
+	//	commonHeaders.Set("Authorization", "Bearer ABC123")
+	//	client.SetHeaders(commonHeaders)
 
 	return client
 }
