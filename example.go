@@ -33,17 +33,12 @@ type User struct {
 }
 
 func getUrls() {
-	//client := gohttp.New()
 
-	headers := make(http.Header)
-	//headers.Set("Authorization", "Bearer ABC123")
-
-	response, err := githubHttpClient.Get("https://api.github.com", headers)
+	response, err := githubHttpClient.Get("https://api.github.com", nil)
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println(response.StatusCode)
+	fmt.Println(response.Status())
 }
 
 func createUser(user User) {
