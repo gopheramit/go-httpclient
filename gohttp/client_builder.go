@@ -8,7 +8,7 @@ import (
 type ClientBuilder interface {
 	SetMaxIdleConnections(i int) ClientBuilder
 	SetConnectionTimeout(timeout time.Duration) ClientBuilder
-	SetRequestTimeout(timeout time.Duration) ClientBuilder
+	SetResponseTimeout(timeout time.Duration) ClientBuilder
 	SetHeaders(headers http.Header) ClientBuilder
 	DisableTimeouts(disable bool) ClientBuilder
 	Build() Client
@@ -43,7 +43,7 @@ func (c *clientBuilder) SetConnectionTimeout(timeout time.Duration) ClientBuilde
 	return c
 }
 
-func (c *clientBuilder) SetRequestTimeout(timeout time.Duration) ClientBuilder {
+func (c *clientBuilder) SetResponseTimeout(timeout time.Duration) ClientBuilder {
 	c.responseTimeout = timeout
 	return c
 }
