@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+
+	"github.com/gopheramit/go-httpclient/core"
 )
 
 type httpClient struct {
@@ -16,29 +18,13 @@ type httpClient struct {
 }
 
 type Client interface {
-	Get(url string, headers http.Header) (*Response, error)
-	Post(url string, headers http.Header, body interface{}) (*Response, error)
-	Put(url string, headers http.Header, body interface{}) (*Response, error)
-	Patch(url string, headers http.Header, body interface{}) (*Response, error)
-	Delete(url string, headers http.Header) (*Response, error)
+	Get(url string, headers ...http.Header) (*core.Response, error)
+	Post(url string, body interface{}, headers ...http.Header) (*core.Response, error)
+	Put(url string, body interface{}, headers ...http.Header) (*core.Response, error)
+	Patch(url string, body interface{}, headers ...http.Header) (*core.Response, error)
+	Delete(url string, headers ...http.Header) (*core.Response, error)
+	Options(url string, headers ...http.Header) (*core.Response, error)
 }
-
-// func new() HttpClient {
-// 	dialer := &net.Dialer{
-// 		Timeout: 1 * time.Second,
-// 	}
-// 	client := http.Client{
-// 		Transport: &http.Transport{
-// 			MaxIdleConnsPerHost:   5,
-// 			ResponseHeaderTimeout: 5 * time.Second,
-// 			DialContext:           dialer.DialContext,
-// 		},
-// 	}
-// 	httpClient := &httpClient{
-// 		client: &client,
-// 	}
-// 	return httpClient
-// }
 
 func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byte, error) {
 	if body == nil {
@@ -56,22 +42,25 @@ func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byt
 	}
 
 }
-func (c *httpClient) Get(url string, headers http.Header) (*Response, error) {
-	return c.do(http.MethodGet, url, headers, nil)
+func (c *httpClient) Get(url string, headers ...http.Header) (*core.Response, error) {
+	return c.do(http.MethodGet, url, getHeaders(headers...), nil)
 }
 
-func (c *httpClient) Post(url string, headers http.Header, body interface{}) (*Response, error) {
-	return c.do(http.MethodGet, url, headers, body)
+func (c *httpClient) Post(url string, body interface{}, headers ...http.Header) (*core.Response, error) {
+	return c.do(http.MethodGet, url, getHeaders(headers...), body)
 }
 
-func (c *httpClient) Put(url string, headers http.Header, body interface{}) (*Response, error) {
-	return c.do(http.MethodPut, url, headers, nil)
+func (c *httpClient) Put(url string, body interface{}, headers ...http.Header) (*core.Response, error) {
+	return c.do(http.MethodPut, url, getHeaders(headers...), nil)
 }
 
-func (c *httpClient) Patch(url string, headers http.Header, body interface{}) (*Response, error) {
-	return c.do(http.MethodPatch, url, headers, nil)
+func (c *httpClient) Patch(url string, body interface{}, headers ...http.Header) (*core.Response, error) {
+	return c.do(http.MethodPatch, url, getHeaders(headers...), nil)
 }
 
-func (c *httpClient) Delete(url string, headers http.Header) (*Response, error) {
-	return c.do(http.MethodDelete, url, headers, nil)
+func (c *httpClient) Delete(url string, headers ...http.Header) (*core.Response, error) {
+	return c.do(http.MethodDelete, url, getHeaders(headers...), nil)
+}
+func (c *httpClient) Options(url string, headers ...http.Header) (*core.Response, error) {
+	return c.do(http.MethodOptions, url, getHeaders(headers...), nil)
 }
