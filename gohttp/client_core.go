@@ -3,10 +3,12 @@ package gohttp
 import (
 	"bytes"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/gopheramit/go-httpclient/core"
 )
 
 const (
@@ -15,7 +17,7 @@ const (
 	defaultConnectionTimeout  = 1 * time.Second
 )
 
-func (c *httpClient) do(method, url string, headers http.Header, body interface{}) (*Response, error) {
+func (c *httpClient) do(method, url string, headers http.Header, body interface{}) (*core.Response, error) {
 
 	fullHeaders := c.getRequestHeaders(headers)
 	requestBody, err := c.getRequestBody(fullHeaders.Get("Content-Type"), body)
@@ -35,22 +37,22 @@ func (c *httpClient) do(method, url string, headers http.Header, body interface{
 	}
 
 	defer response.Body.Close()
-	responseBody, err := ioutil.ReadAll(response.Body)
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	finalResponse := Response{
-		status:     response.Status,
-		statusCode: response.StatusCode,
-		headers:    response.Header,
-		body:       responseBody,
+	finalResponse := core.Response{
+		Status:     response.Status,
+		StatusCode: response.StatusCode,
+		Headers:    response.Header,
+		Body:       responseBody,
 	}
 	return &finalResponse, nil
 }
 
 func (c *httpClient) getHttpClient() *http.Client {
-
+	// gohttp_mock.MockUpServer.IsEnabled()
 	c.clientOnce.Do(func() {
 		c.client = &http.Client{
 			Timeout: c.getConnectionTimeout() + c.getResponseTimeout(),
