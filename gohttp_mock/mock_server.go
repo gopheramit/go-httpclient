@@ -1,4 +1,4 @@
-package gohtt_mock
+package gohttp_mock
 
 import (
 	"crypto/md5"
@@ -39,4 +39,37 @@ func (m *mockServer) cleanBody(body string) string {
 	body = strings.ReplaceAll(body, "\t", "")
 	return body
 
+}
+
+func (m *mockServer) Start() {
+	m.serverMutex.Lock()
+	defer m.serverMutex.Unlock()
+	m.enabled = true
+}
+
+func (m *mockServer) Stop() {
+	m.serverMutex.Lock()
+	defer m.serverMutex.Unlock()
+	m.enabled = false
+}
+
+func (m *mockServer) IsEnabled() bool {
+	return m.enabled
+}
+
+func (m *mockServer) GetMockedClient() core.HttpClient {
+	return m.httpClient
+
+}
+func (m *mockServer) DeleteMocks() {
+	m.serverMutex.Lock()
+	defer m.serverMutex.Unlock()
+	m.mocks = make(map[string]*Mock)
+}
+
+func (m *mockServer) AddMocks(mock Mock) {
+	m.serverMutex.Lock()
+	defer m.serverMutex.Unlock()
+	key := m.getMockKey(mock.Method, mock.Url, mock.RequestBody)
+	m.mocks[key] = &mock
 }

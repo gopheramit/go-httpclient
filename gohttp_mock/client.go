@@ -1,4 +1,4 @@
-package gohtt_mock
+package gohttp_mock
 
 import (
 	"errors"

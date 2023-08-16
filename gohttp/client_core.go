@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gopheramit/go-httpclient/gohttp_mock"
+
 	"github.com/gopheramit/go-httpclient/core"
 )
 
@@ -51,8 +53,10 @@ func (c *httpClient) do(method, url string, headers http.Header, body interface{
 	return &finalResponse, nil
 }
 
-func (c *httpClient) getHttpClient() *http.Client {
-	// gohttp_mock.MockUpServer.IsEnabled()
+func (c *httpClient) getHttpClient() core.HttpClient {
+	if gohttp_mock.MockUpServer.IsEnabled() {
+		return gohttp_mock.MockUpServer.GetMockedClient()
+	}
 	c.clientOnce.Do(func() {
 		c.client = &http.Client{
 			Timeout: c.getConnectionTimeout() + c.getResponseTimeout(),
