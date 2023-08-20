@@ -1,10 +1,7 @@
 package gohttp
 
 import (
-	"encoding/json"
-	"encoding/xml"
 	"net/http"
-	"strings"
 	"sync"
 
 	"github.com/gopheramit/go-httpclient/core"
@@ -26,22 +23,6 @@ type Client interface {
 	Options(url string, headers ...http.Header) (*core.Response, error)
 }
 
-func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byte, error) {
-	if body == nil {
-		return nil, nil
-	}
-	switch strings.ToLower(contentType) {
-	case "application/json":
-		return json.Marshal(body)
-
-	case "application/xml":
-		return xml.Marshal(body)
-
-	default:
-		return json.Marshal(body)
-	}
-
-}
 func (c *httpClient) Get(url string, headers ...http.Header) (*core.Response, error) {
 	return c.do(http.MethodGet, url, getHeaders(headers...), nil)
 }

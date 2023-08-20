@@ -2,13 +2,17 @@ package gohttp
 
 import (
 	"bytes"
+	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"io"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gopheramit/go-httpclient/gohttp_mock"
+	"github.com/gopheramit/go-httpclient/gomime"
 
 	"github.com/gopheramit/go-httpclient/core"
 )
@@ -72,23 +76,6 @@ func (c *httpClient) getHttpClient() core.HttpClient {
 
 	return c.client
 }
-func (c *httpClient) getRequestHeaders(requestHeaders http.Header) http.Header {
-	result := make(http.Header)
-	for header, value := range c.builder.headers {
-		if len(value) > 0 {
-			result.Set(header, value[0])
-		}
-	}
-
-	for header, value := range requestHeaders {
-		if len(value) > 0 {
-			result.Set(header, value[0])
-		}
-	}
-
-	return result
-
-}
 
 func (c *httpClient) getMaxIdleConnections() int {
 	if c.builder.maxIdleConnections > 0 {
@@ -114,4 +101,21 @@ func (c *httpClient) getConnectionTimeout() time.Duration {
 		return 0
 	}
 	return defaultConnectionTimeout
+}
+
+func (c *httpClient) getRequestBody(contentType string, body interface{}) ([]byte, error) {
+	if body == nil {
+		return nil, nil
+	}
+
+	switch strings.ToLower(contentType) {
+	case gomime.ContentTypeJson:
+		return json.Marshal(body)
+
+	case gomime.ContentTypeXml:
+		return xml.Marshal(body)
+
+	default:
+		return json.Marshal(body)
+	}
 }
