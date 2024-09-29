@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+// The mock structure provides clean way to configure http mocks
+// based on combination betweeen method, url, request body, response body.
 type Mock struct {
 	Method      string
 	Url         string
